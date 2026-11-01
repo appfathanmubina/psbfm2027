@@ -34,7 +34,11 @@ const state = {
   dashboardLoading: false,
   dashboardError: "",
   pageCleanup: null,
-  deferredInstall: null
+  deferredInstall: null,
+  publicGalleryItems: [],
+  publicGalleryIndex: 0,
+  publicGalleryTimer: null,
+  publicVideoIndex: 0
 };
 
 const esc = (value) => String(value ?? "").replace(/[&<>"']/g, (c) => ({ "&":"&amp;", "<":"&lt;", ">":"&gt;", '"':"&quot;", "'":"&#39;" }[c]));
@@ -69,19 +73,29 @@ function connectionStatus() {
   const dot = state.backendStatus === "ok" ? "ok" : state.backendStatus === "error" ? "bad" : "";
   return `<span class="connection-pill"><i class="dot ${dot}"></i>${label}</span>`;
 }
+function stopPublicGalleryTimer() {
+  if (state.publicGalleryTimer) {
+    clearInterval(state.publicGalleryTimer);
+    state.publicGalleryTimer = null;
+  }
+}
 function renderHome() {
+  stopPublicGalleryTimer();
+  state.publicGalleryItems = [];
+  state.publicGalleryIndex = 0;
+  state.publicVideoIndex = 0;
   root.innerHTML = `${header('<button class="btn btn-ghost" data-action="login">Masuk</button><button class="btn btn-primary" data-action="register">Daftar</button>')}
-    <main class="main">
+    <main class="main public-home">
       <section class="hero">
         <div>
           <span class="eyebrow">Pendaftaran Santri Baru · 2027–2028</span>
           <h1>Mulai perjalanan pendidikan bersama <em>Fathan Mubina.</em></h1>
-          <p>Portal resmi Penerimaan Santri Baru Pesantren Ciawi Bogor Fathan Mubina. Informasi pendaftaran, pengisian formulir, dokumen, pembayaran, dan proses seleksi tersedia dalam satu aplikasi.</p>
+          <p>Portal resmi Penerimaan Santri Baru Pesantren Ciawi Bogor Fathan Mubina. Langkah awal perjalanan menjadi santri berilmu, berakhlak, dan berprestasi.</p>
           <div class="hero-actions">
             <button class="btn btn-primary" data-action="register">Buat Akun Wali <span aria-hidden="true">→</span></button>
             <button class="btn btn-outline" data-action="login">Masuk ke Akun</button>
           </div>
-          <div style="margin-top:20px">${connectionStatus()}</div>
+          <div class="public-connection">${connectionStatus()}</div>
         </div>
         <aside class="hero-card">
           <div class="mini-label">Pesantren Ciawi Bogor</div>
@@ -90,7 +104,34 @@ function renderHome() {
           <div class="year">TAHUN AJARAN 2027–2028</div>
         </aside>
       </section>
-      <section class="section">
+
+      <section class="public-media-section" aria-label="Galeri kegiatan pesantren">
+        <div class="public-media-heading"><div><span class="eyebrow">Dokumentasi</span><h2>Galeri Fathan Mubina</h2><p>Potret kegiatan dan kehidupan santri di pesantren.</p></div><span class="public-media-count" id="gallery-count">Memuat…</span></div>
+        <div class="public-gallery-frame" id="public-gallery-frame">
+          <div class="public-gallery-track" id="public-gallery-track"><div class="public-gallery-empty">Memuat foto kegiatan pesantren…</div></div>
+          <div class="public-gallery-controls"><button type="button" data-gallery-step="-1" aria-label="Foto sebelumnya">‹</button><button type="button" data-gallery-step="1" aria-label="Foto berikutnya">›</button></div>
+        </div>
+        <div class="public-gallery-dots" id="public-gallery-dots"></div>
+      </section>
+
+      <section class="public-media-section" aria-label="Video Fathan Mubina">
+        <div class="public-media-heading"><div><span class="eyebrow">Video</span><h2>Video Fathan Mubina</h2><p>Kenali lebih dekat lingkungan dan aktivitas pesantren.</p></div><span class="public-media-count" id="public-video-count">1 / 3</span></div>
+        <div class="public-video-card" id="public-video-card"><div class="public-video-media" id="public-video-media"></div></div>
+        <div class="public-video-controls"><button type="button" data-video-step="-1" aria-label="Video sebelumnya">‹</button><div class="public-video-dots" id="public-video-dots"></div><button type="button" data-video-step="1" aria-label="Video berikutnya">›</button></div>
+      </section>
+
+      <section class="public-social-section" aria-label="Media sosial Pesantren">
+        <div class="public-social-heading"><h2>Ikuti Media Sosial Pesantren</h2><p>Dapatkan informasi dan dokumentasi terbaru Fathan Mubina.</p></div>
+        <div class="public-social-list">
+          <a class="public-social-link website" href="https://www.fathanmubina.com" target="_blank" rel="noopener noreferrer"><span class="public-social-icon">◎</span><span>Website</span></a>
+          <a class="public-social-link youtube" href="https://www.youtube.com/@fathanmubinaibs0303" target="_blank" rel="noopener noreferrer"><span class="public-social-icon">▶</span><span>YouTube</span></a>
+          <a class="public-social-link instagram" href="https://www.instagram.com/pesantrenfathanmubina" target="_blank" rel="noopener noreferrer"><span class="public-social-icon">◎</span><span>Instagram</span></a>
+          <a class="public-social-link facebook" href="https://www.facebook.com/fathanmubina.todays" target="_blank" rel="noopener noreferrer"><span class="public-social-icon">f</span><span>Facebook</span></a>
+          <a class="public-social-link tiktok" href="https://www.tiktok.com/@pesantrenfathanmubina" target="_blank" rel="noopener noreferrer"><span class="public-social-icon">♪</span><span>TikTok</span></a>
+        </div>
+      </section>
+
+      <section class="section public-services">
         <div class="section-heading"><h2>Layanan Pendaftaran</h2><p>Seluruh tahapan utama dalam satu portal.</p></div>
         <div class="feature-grid">
           <article class="feature"><div class="feature-icon">01</div><h3>Registrasi Akun</h3><p>Buat akun Wali menggunakan nomor HP atau alamat email yang aktif.</p></article>
@@ -99,6 +140,76 @@ function renderHome() {
         </div>
       </section>
     </main>${footer()}`;
+  renderPublicVideo(0);
+  loadPublicGallery();
+}
+const PUBLIC_VIDEOS = [
+  { id: "HDrWuSwkbak", title: "Video Fathan Mubina 1" },
+  { id: "0G0xGqSSI5Y", title: "Video Fathan Mubina 2" },
+  { id: "fA63UYz0Jlg", title: "Video Fathan Mubina 3" }
+];
+function renderPublicVideo(index = 0) {
+  const card = document.querySelector("#public-video-card");
+  const media = document.querySelector("#public-video-media");
+  const dots = document.querySelector("#public-video-dots");
+  const count = document.querySelector("#public-video-count");
+  if (!card || !media || !dots || !count) return;
+  const total = PUBLIC_VIDEOS.length;
+  state.publicVideoIndex = ((Number(index) || 0) % total + total) % total;
+  const video = PUBLIC_VIDEOS[state.publicVideoIndex];
+  count.textContent = `${state.publicVideoIndex + 1} / ${total}`;
+  media.innerHTML = `<img src="https://i.ytimg.com/vi/${video.id}/hqdefault.jpg" alt="${esc(video.title)}" loading="lazy" referrerpolicy="no-referrer"><button type="button" class="public-video-play" data-video-play aria-label="Putar ${esc(video.title)}">▶</button><div class="public-video-title">${esc(video.title)}</div>`;
+  dots.innerHTML = PUBLIC_VIDEOS.map((item, i) => `<button type="button" class="public-video-dot${i === state.publicVideoIndex ? " active" : ""}" data-video-index="${i}" aria-label="Video ${i + 1}"></button>`).join("");
+}
+function playPublicVideo() {
+  const media = document.querySelector("#public-video-media");
+  const video = PUBLIC_VIDEOS[state.publicVideoIndex];
+  if (!media || !video) return;
+  media.innerHTML = `<iframe src="https://www.youtube-nocookie.com/embed/${video.id}?autoplay=1&rel=0" title="${esc(video.title)}" loading="lazy" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>`;
+}
+function renderPublicGallery(items) {
+  stopPublicGalleryTimer();
+  state.publicGalleryItems = Array.isArray(items) ? items.filter((item) => item && item.url) : [];
+  state.publicGalleryIndex = 0;
+  const track = document.querySelector("#public-gallery-track");
+  const dots = document.querySelector("#public-gallery-dots");
+  const count = document.querySelector("#gallery-count");
+  if (!track || !dots || !count) return;
+  if (!state.publicGalleryItems.length) {
+    track.innerHTML = '<div class="public-gallery-empty">Foto galeri belum tersedia. Silakan periksa kembali koneksi backend.</div>';
+    dots.innerHTML = "";
+    count.textContent = "0 foto";
+    return;
+  }
+  count.textContent = `${state.publicGalleryItems.length} foto`;
+  track.innerHTML = state.publicGalleryItems.map((item, i) => `<div class="public-gallery-slide"><img src="${esc(item.url)}" alt="${esc(item.name || "Foto kegiatan Fathan Mubina")}" loading="${i === 0 ? "eager" : "lazy"}" referrerpolicy="no-referrer" onerror="this.style.opacity='0.25'"><div class="public-gallery-caption">${esc(item.name || "Kegiatan Fathan Mubina")}</div></div>`).join("");
+  dots.innerHTML = state.publicGalleryItems.map((item, i) => `<button type="button" class="public-gallery-dot${i === 0 ? " active" : ""}" data-gallery-index="${i}" aria-label="Foto ${i + 1}"></button>`).join("");
+  updatePublicGallery();
+  if (state.publicGalleryItems.length > 1) state.publicGalleryTimer = setInterval(() => movePublicGallery(1), 5000);
+}
+function updatePublicGallery() {
+  const track = document.querySelector("#public-gallery-track");
+  const dots = document.querySelector("#public-gallery-dots");
+  if (!track || !dots || !state.publicGalleryItems.length) return;
+  track.style.transform = `translateX(-${state.publicGalleryIndex * 100}%)`;
+  Array.from(dots.children).forEach((dot, i) => dot.classList.toggle("active", i === state.publicGalleryIndex));
+}
+function movePublicGallery(delta) {
+  const total = state.publicGalleryItems.length;
+  if (!total) return;
+  state.publicGalleryIndex = (state.publicGalleryIndex + delta + total) % total;
+  updatePublicGallery();
+}
+async function loadPublicGallery() {
+  const track = document.querySelector("#public-gallery-track");
+  if (!track) return;
+  try {
+    const result = await apiCall("getPublicGallery", false);
+    if (result?.success) renderPublicGallery(result.items || []);
+    else renderPublicGallery([]);
+  } catch (error) {
+    renderPublicGallery([]);
+  }
 }
 function renderLogin(error = "") {
   root.innerHTML = `${header('<button class="btn btn-ghost" data-action="register">Buat Akun</button>')}
@@ -367,6 +478,7 @@ function renderMonitoring() {
   });
 }
 function render() {
+  if (state.route !== "home") stopPublicGalleryTimer();
   if (!["registration", "profile", "documents", "payments", "selection", "verification", "reregistration", "selection-admin", "reregistration-admin", "communications", "incidents", "chat", "master-data", "users", "reporting", "monitoring"].includes(state.route) && state.pageCleanup) {
     state.pageCleanup();
     state.pageCleanup = null;
@@ -523,6 +635,15 @@ async function restoreSession() {
 }
 function bindEvents() {
   root.addEventListener("click", (event) => {
+    const galleryStep = event.target.closest("[data-gallery-step]")?.dataset.galleryStep;
+    if (galleryStep !== undefined) movePublicGallery(Number(galleryStep));
+    const galleryIndex = event.target.closest("[data-gallery-index]")?.dataset.galleryIndex;
+    if (galleryIndex !== undefined) { state.publicGalleryIndex = Number(galleryIndex); updatePublicGallery(); }
+    const videoStep = event.target.closest("[data-video-step]")?.dataset.videoStep;
+    if (videoStep !== undefined) renderPublicVideo(state.publicVideoIndex + Number(videoStep));
+    const videoIndex = event.target.closest("[data-video-index]")?.dataset.videoIndex;
+    if (videoIndex !== undefined) renderPublicVideo(Number(videoIndex));
+    if (event.target.closest("[data-video-play]")) playPublicVideo();
     const action = event.target.closest("[data-action]")?.dataset.action;
     if (action === "login") { state.route = "login"; render(); }
     if (action === "register") { state.route = "register"; render(); }
