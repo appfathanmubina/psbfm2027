@@ -318,3 +318,64 @@ a { color: inherit; }
   .dashboard-ops-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
 }
 @media (prefers-reduced-motion: reduce) { *, *:before, *:after { scroll-behavior: auto !important; animation-duration: .01ms !important; transition-duration: .01ms !important; } }
+
+
+/* Public landing media sections: aligned with the Apps Script public home. */
+.public-home { width: min(1160px, calc(100% - 36px)); }
+.public-connection { margin-top: 20px; }
+.public-media-section, .public-social-section { padding: 12px 0 26px; }
+.public-media-heading { display:flex; align-items:flex-end; justify-content:space-between; gap:16px; margin:8px 0 14px; }
+.public-media-heading .eyebrow { margin-bottom:9px; }
+.public-media-heading h2, .public-social-heading h2 { margin:0; font:800 clamp(20px,3vw,26px)/1.2 "Plus Jakarta Sans",sans-serif; }
+.public-media-heading p, .public-social-heading p { margin:7px 0 0; color:var(--muted); font-size:13px; line-height:1.6; }
+.public-media-count { flex:0 0 auto; color:var(--muted); font-size:12px; font-weight:800; padding-bottom:3px; }
+.public-gallery-frame { position:relative; overflow:hidden; aspect-ratio:16/9; border-radius:24px; background:#e9e0f0; box-shadow:var(--shadow); touch-action:pan-y; }
+.public-gallery-track { display:flex; width:100%; height:100%; transition:transform .38s ease; }
+.public-gallery-slide { min-width:100%; height:100%; position:relative; background:#e9e0f0; }
+.public-gallery-slide img { display:block; width:100%; height:100%; object-fit:cover; }
+.public-gallery-caption { position:absolute; inset:auto 0 0; padding:42px 20px 17px; color:#fff; font-weight:800; font-size:14px; background:linear-gradient(180deg,transparent,rgba(20,12,35,.75)); }
+.public-gallery-controls { position:absolute; inset:0; display:flex; align-items:center; justify-content:space-between; padding:0 12px; pointer-events:none; }
+.public-gallery-controls button, .public-video-controls>button { pointer-events:auto; width:42px; height:42px; border:0; border-radius:50%; background:rgba(255,255,255,.94); color:var(--purple-dark); box-shadow:0 5px 18px #1b102533; font-size:27px; line-height:1; }
+.public-gallery-empty { min-height:220px; height:100%; display:grid; place-items:center; padding:24px; text-align:center; color:var(--muted); font-size:13px; }
+.public-gallery-dots, .public-video-dots { display:flex; align-items:center; justify-content:center; gap:7px; margin-top:12px; }
+.public-gallery-dot, .public-video-dot { width:8px; height:8px; padding:0; border:0; border-radius:99px; background:#c9b8d5; transition:all .2s ease; }
+.public-gallery-dot.active, .public-video-dot.active { width:22px; background:var(--purple); }
+.public-video-card { position:relative; overflow:hidden; aspect-ratio:16/9; border-radius:24px; background:#17121f; box-shadow:var(--shadow); }
+.public-video-media { position:relative; width:100%; height:100%; }
+.public-video-media img, .public-video-media iframe { display:block; width:100%; height:100%; border:0; object-fit:cover; }
+.public-video-play { position:absolute; left:50%; top:50%; transform:translate(-50%,-50%); width:66px; height:66px; border:0; border-radius:50%; background:#ffffffed; color:var(--purple-dark); font-size:27px; padding-left:5px; box-shadow:0 8px 25px #0005; }
+.public-video-title { position:absolute; inset:auto 0 0; padding:38px 20px 17px; color:#fff; font-size:14px; font-weight:800; background:linear-gradient(180deg,transparent,rgba(20,12,35,.78)); pointer-events:none; }
+.public-video-controls { display:flex; align-items:center; justify-content:center; gap:18px; }
+.public-video-controls .public-video-dots { margin:0; }
+.public-video-controls>button { width:34px; height:34px; font-size:23px; background:#fff; border:1px solid var(--line); box-shadow:none; }
+.public-social-heading { text-align:center; margin:12px 0 18px; }
+.public-social-list { display:grid; grid-template-columns:repeat(5,minmax(0,1fr)); gap:12px; max-width:700px; margin:0 auto; }
+.public-social-link { display:flex; flex-direction:column; align-items:center; gap:8px; padding:17px 8px; text-decoration:none; border:1px solid var(--line); border-radius:18px; background:#fff; box-shadow:var(--shadow); font-size:12px; font-weight:800; }
+.public-social-icon { width:44px; height:44px; display:grid; place-items:center; border-radius:15px; background:var(--purple-soft); color:var(--purple-dark); font-size:23px; font-weight:900; }
+.public-social-link.youtube .public-social-icon { color:#dc2626; background:#fff0f0; }
+.public-social-link.instagram .public-social-icon { color:#c026d3; background:#fdf0ff; }
+.public-social-link.facebook .public-social-icon { color:#2563eb; background:#eff6ff; }
+.public-social-link.tiktok .public-social-icon { color:#111827; background:#f1f1f1; }
+.public-services { padding-top:28px; }
+@media(max-width:700px) {
+  .public-home { width:min(100% - 28px, 560px); }
+  .public-home .hero { padding:36px 0 28px; grid-template-columns:1fr; gap:20px; }
+  .public-home .hero h1 { font-size:clamp(32px,8vw,44px); letter-spacing:-1.2px; }
+  .public-home .hero p { font-size:14px; }
+  .public-home .hero-card { min-height:230px; padding:24px; border-radius:22px; }
+  .public-media-section, .public-social-section { padding-bottom:20px; }
+  .public-media-heading h2, .public-social-heading h2 { font-size:21px; }
+  .public-media-heading p, .public-social-heading p { font-size:12px; }
+  .public-gallery-frame, .public-video-card { border-radius:18px; }
+  .public-gallery-caption, .public-video-title { font-size:11px; padding:30px 13px 12px; }
+  .public-gallery-controls { padding:0 7px; }
+  .public-gallery-controls button { width:34px; height:34px; font-size:22px; }
+  .public-video-play { width:54px; height:54px; font-size:23px; }
+  .public-social-list { gap:7px; }
+  .public-social-link { padding:11px 3px; gap:6px; font-size:9px; border-radius:14px; }
+  .public-social-icon { width:36px; height:36px; border-radius:12px; font-size:19px; }
+}
+@media(max-width:380px) {
+  .public-social-list { grid-template-columns:repeat(3,minmax(0,1fr)); }
+  .public-media-heading { align-items:flex-start; }
+}
