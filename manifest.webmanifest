@@ -1,0 +1,21 @@
+{
+  "id": "./",
+  "name": "PSB Fathan Mubina",
+  "short_name": "PSB FM",
+  "description": "Penerimaan Santri Baru Pesantren Ciawi Bogor Fathan Mubina",
+  "lang": "id-ID",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "portrait-primary",
+  "background_color": "#f8f5fc",
+  "theme_color": "#7026a6",
+  "icons": [
+    {
+      "src": "./assets/icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}
