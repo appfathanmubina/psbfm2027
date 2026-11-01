@@ -1,4 +1,4 @@
-const CACHE_NAME = "psb-fm-shell-v14";
+const CACHE_NAME = "psb-fm-shell-v15";
 const APP_ROOT = new URL("./", self.location.href);
 const SHELL = [
   new URL("./", self.location.href).href,
